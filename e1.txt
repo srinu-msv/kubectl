@@ -82,3 +82,8 @@ kubectl apply -f pod1.yml
 kubectl get pods
 
 kubectl get pods -o wide
+
+*To stop cluster
+eksctl delete cluster \
+--name 
+--region
