@@ -1,0 +1,84 @@
+1.sudo apt-get update -y
+
+sudo apt-get install -y curl wget unzip tar git jq
+
+
+2.curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+rm -rf awscliv2.zip aws/
+
+
+
+aws --version
+
+
+3.
+KUBECTL_VERSION=$(curl -sL https://dl.k8s.io/release/stable.txt)
+curl -LO "https://dl.k8s.io/release${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/kubectl
+
+
+
+kubectl version --client
+
+//if you are getting an error then run this commands one to one
+sudo rm -f /usr/local/bin/kubectl
+
+curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+
+chmod +x kubectl
+
+
+sudo mv kubectl /usr/local/bin/
+
+
+
+kubectl version --client
+
+
+4.curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
+| tar xz -C /tmp
+
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+
+5.aws configure
+
+6.eksctl create cluster \
+--name my-eks-bindu1 \
+--region us-east-1 \
+--nodegroup-name standard-workers \
+--node-type t3.medium \
+--nodes 1 \
+--nodes-min 1 \
+--nodes-max 1 \
+--managed
+
+
+
+
+
+
+//it is a pod file text which is used to create containers
+kind: Pod
+apiVersion: v1
+metadata:
+  name: myfirspod
+spec:
+  containers:
+    - name: apachecon
+      image: httpd
+      ports:
+        - containerPort: 80
+
+*To run the script
+kubectl apply -f pod1.yml
+
+*To get pods
+kubectl get pods
+
+kubectl get pods -o wide
