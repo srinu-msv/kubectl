@@ -1,0 +1,110 @@
+
+    2  sudo apt update -y
+    3  git --version
+    4  python3 --version
+    5  docker --version
+    6  git clone "https://github.com/srinu-msv/cicdakshat.git"
+    7  cd cicdakshat
+    8  ls
+    9  git checkout -b vasu-feature
+   10  touch demo.txt
+   11  echo "hello" > demo.txt
+   12  git status
+   13  git add .
+   14  git commit -m "demo file added"
+   15  git status
+   16  git push -u origin vasu-feature
+
+#Git Completed
+
+   18  apt update
+   19  apt install docker.io -y
+   20  systemctl start docker
+   21  systemctl enable docker
+   22  docker login
+   23  vi Dockerfile
+FROM eclipse-temurin:8
+EXPOSE 80
+COPY target/devops-integration.jar devops-integration.jar
+ENTRYPOINT ["java","-jar","/devops-integration.jar"]
+
+
+   25  apt update
+   27  apt install openjdk-17-jdk -y
+   28  cat Dockerfile
+   29  java --version
+   30  export
+   32  export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+   33  chmod +x mvnw
+   34  ./mvnw clean package
+   35  ls target
+   36  docker build -t srinu445/vasu .
+   37  docker push srinu445/vasu
+   39  cd ..
+   40  sudo apt-get update -y
+   41  sudo apt-get install -y curl wget unzip tar git jq
+   42  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   43  unzip awscliv2.zip
+   44  sudo ./aws/install
+   45  rm -rf awscliv2.zip aws/
+   46  aws --version
+   47  KUBECTL_VERSION=$(curl -sL https://dl.k8s.io/release/stable.txt)
+   48  curl -LO "https://dl.k8s.io/release${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+   49  chmod +x kubectl
+   50  sudo mv kubectl /usr/local/bin/kubectl
+   51  curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+   52  chmod +x kubectl
+   53  sudo mv kubectl /usr/local/bin/
+   54  kubectl version --client
+   55  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+   56  sudo mv /tmp/eksctl /usr/local/bin
+   57  eksctl version
+   58  aws configure
+   59  eksctl create cluster --name 1999 --region eu-west-1 --nodegroup-name standard-workers --node-type t3.medium --nodes 1 --nodes-min 1 --nodes-max 1 --managed
+   60  vi deploy.yml
+
+kind: Deployment 
+apiVersion: apps/v1
+metadata:
+  name: mydeployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: deployment1
+  template:
+    metadata:
+      name: testp1
+      labels:
+        name: deployment1
+    spec:
+      containers:
+        - name: c00
+          image: httpd
+          ports:
+            - containerPort: 80
+
+   61  kubectl apply -f deploy.yml
+   62  kubectl get pods
+   63  kubectl get pods -o wide
+   64  vi service.yml
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: demoservices
+spec:
+  ports:
+    - port: 8080
+      targetPort: 80
+  selector:
+    name: deployment1
+  type: LoadBalancer
+
+   65  kubectl apply -f service.yml
+   66  kubectl get svc
+   67  kubectl delete svc demoservices
+   68  kubectl delete deployment mydeployment
+   69  kubectl get all
+   70  eksctl delete cluster --name 1999 --region eu-west-1
+   72  eksctl get cluster
