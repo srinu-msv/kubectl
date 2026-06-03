@@ -87,3 +87,4 @@ kubectl get pods -o wide
 eksctl delete cluster \
 --name 
 --region
+
