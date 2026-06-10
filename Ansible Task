@@ -1,0 +1,85 @@
+ansible task
+
+create three instances 1.master, node2, node3
+
+sudo su
+apt update -y
+apt-get install -y software-properties-common
+apt-add-repository ppa:ansible/ansible
+apt-get update
+apt-get install -y ansible
+ansible --version
+ 
+do this master only
+
+
+Step 4: Configure Hosts File
+
+vi /etc/ansible/hosts
+
+[ansiblegroup]
+<private_ip_of_node1>
+<private_ip_of_node2>
+
+Step 5: Create User
+
+adduser devops
+
+password: devops (press enter 3 times, then y)
+
+Same username/password across all machines
+
+
+Step 6:Configure SSH
+
+vi /etc/ssh/sshd_config
+
+#Line 34 → PermitRootLogin yes
+
+#Line 47 → remove #
+
+#Line 66 → PasswordAuthentication yes
+
+On Ubuntu 24.04 also edit:
+
+cd /etc/ssh/sshd_config.d/
+ls
+
+sudo vi /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+
+#Set PasswordAuthentication yes
+
+service ssh restart
+
+Same thing node1 and node2 also
+
+####then go back to master
+
+Step 7:Grant Sudo Privileges
+
+Run "visudo" on master nodes
+Add:
+devops ALL=(ALL:ALL) NOPASSWD:ALL
+
+Step 8: Establish SSH Trust
+
+su - devops
+ssh-keygen   # press enter 3 times
+ls -a
+cd .ssh
+
+ssh-copy-id devops@<private_ip_of_node1>
+ssh-copy-id devops@<private_ip_of_node2>
+
+
+Enter password (devops) when prompted.
+
+Now master can connect to nodes without password
+
+Step 9: Verify Setup
+
+ansible all -m ping -i /etc/ansible/hosts
+
+ansible all -a"touch file"
+ansible all -a"ls"
+
