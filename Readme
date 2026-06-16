@@ -1,0 +1,237 @@
+DevOps Engineering Case Study Assignment
+Addressbook Application – End-to-End CI/CD Pipeline
+Tools Required
+GitHub
+Jenkins
+Maven
+Ansible
+Terraform
+Apache Tomcat
+Background
+
+TechConnect Pvt. Ltd. manages an internal Addressbook Application used for employee contact management.
+
+Current Problems:
+
+Manual deployment process
+Delayed releases
+Inconsistent environments
+Production outages
+
+Application Details:
+
+Application: Addressbook – Employee Contact Manager
+Language: Java 8
+Framework: Vaadin
+Build Tool: Maven
+Packaging: WAR File (addressbook.war)
+Server: Apache Tomcat 9
+Cloud: AWS (ap-south-1)
+
+GitHub Repository:
+https://github.com/akshu20791/addressbook-cicd-project
+
+Phase 1 – Infrastructure Provisioning (Terraform)
+
+Create AWS infrastructure using Terraform.
+
+Requirements:
+
+Provision 2 EC2 instances:
+Jenkins Server
+Tomcat Server
+Create Security Group allowing:
+SSH (22)
+HTTP/Tomcat (8080)
+Use variables for:
+Region
+AMI ID
+Instance Type
+Key Pair
+Output:
+Jenkins Server Public IP
+Tomcat Server Public IP
+Organize code into:
+provider.tf
+variables.tf
+main.tf
+outputs.tf
+Phase 2 – Dependency Installation (Ansible)
+
+Install and configure all software using Ansible.
+
+Jenkins Server
+
+Install:
+
+Java 8
+Maven
+Jenkins
+
+Configure:
+
+Jenkins service enabled at boot
+Tomcat Server
+
+Install:
+
+Apache Tomcat 9
+
+Configure:
+
+Dedicated Tomcat user
+Tomcat Manager application
+Deployment user for Jenkins
+Ansible Structure
+
+Roles:
+
+common
+jenkins
+tomcat
+
+Master Playbook:
+
+site.yml
+
+Requirement:
+
+Playbooks must be idempotent
+Phase 3 – Source Control & Collaboration (GitHub)
+Fork repository to your GitHub account.
+Clone locally.
+Implement branching strategy:
+Protect master branch
+Use feature branches
+Use Pull Requests
+Branch Protection Rules:
+Minimum 1 reviewer approval
+No direct pushes
+Make code change:
+Create feature branch
+Push changes
+Raise Pull Request
+Get approval
+Merge
+Configure GitHub Webhook:
+Trigger Jenkins automatically on push/merge to master
+Phase 4 – CI/CD Pipeline Automation (Jenkins)
+
+Create a Declarative Pipeline.
+
+Jenkins Pipeline Stages
+Checkout
+Build
+Unit Test
+Package
+Deploy to Tomcat
+Requirements
+Pipeline stored in Jenkinsfile
+Jenkinsfile must be inside GitHub repository
+Trigger automatically using GitHub Webhook
+No manual build required
+Credentials
+
+Store securely in Jenkins Credentials:
+
+GitHub Token
+Tomcat Password
+
+Do NOT hardcode credentials.
+
+Additional Configuration
+Build timeout
+Log rotation (keep last 10 builds)
+Workspace cleanup after build
+Manual approval before deployment
+Phase 5 – Application Build (Maven)
+
+Pipeline should execute:
+
+mvn clean
+mvn compile
+mvn test
+mvn package
+
+Requirements:
+
+Generate WAR file:
+addressbook.war
+Archive WAR artifact in Jenkins
+Publish test reports
+Fail build if any unit test fails
+Phase 6 – Deployment & Validation (Tomcat)
+
+Deploy automatically after:
+
+Successful build
+Manual approval
+
+Application URL:
+
+http://<TOMCAT_SERVER_IP>:8080/addressbook
+
+Validation Steps:
+
+Create feature branch.
+Make code change.
+Raise Pull Request.
+Get approval.
+Merge to master.
+Jenkins triggers automatically.
+Build succeeds.
+WAR deploys automatically.
+Updated application visible in browser.
+Deliverables
+1. Terraform (15 Marks)
+provider.tf
+variables.tf
+main.tf
+outputs.tf
+Two EC2 instances provisioned
+2. Ansible (15 Marks)
+Roles:
+common
+jenkins
+tomcat
+Automated installation
+3. GitHub (15 Marks)
+Forked repository
+Feature branch
+Approved PR
+Branch protection enabled
+4. GitHub + Jenkins (10 Marks)
+Webhook configured
+Auto-triggered Jenkins build evidence
+5. Jenkins (25 Marks)
+Jenkinsfile
+All stages implemented
+Credentials secured
+Timeout configured
+Log rotation configured
+Manual approval gate
+6. Maven + Jenkins (10 Marks)
+Successful build logs
+WAR artifact archived
+7. Tomcat (10 Marks)
+
+Screenshot showing:
+
+http://<TOMCAT_IP>:8080/addressbook
+
+running successfully
+
+Constraints
+Must use:
+Terraform
+Ansible
+GitHub
+Jenkins
+Maven
+Apache Tomcat
+No hardcoded credentials
+EC2 instances must be created only through Terraform
+Software installation must be done only through Ansible
+Jenkinsfile must be stored in repository
+PR merge should automatically trigger Jenkins
+Manual approval before deployment is mandatory 
