@@ -1,0 +1,386 @@
+Milestone....
+
+* Launch a instance with the name Terraform
+
+Then connect to the instance
+
+//Install terraform
+
+1.wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+
+
+2.sudo apt-get update -y
+3.sudo apt-get install -y curl wget unzip tar git jq
+
+//install aws and configure
+
+3.curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+rm -rf awscliv2.zip aws/
+
+4.aws --version
+
+5.aws configure
+//with access keys os iam users
+
+//create a directory
+
+6.mkdir project
+7.cd project   //inside the project
+
+//create files inside that
+
+8.vi provider.tf
+
+provider "aws"{
+  region = var.region
+}
+
+9.vi variables.tf
+
+variable "region"{
+  default = "eu-north-1"
+}
+variable "instance_type"{
+  default = "t3.medium"
+}
+variable "key_name"{
+  default = "jen"
+}
+
+10.vi main.tf
+resource "aws_security_group" "devops_sg" {
+  name = "devops-sg"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "jenkins_server" {
+  ami           = "ami-067bcf851477ebb78"
+  instance_type = var.instance_type
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [aws_security_group.devops_sg.id]
+
+  tags = {
+    Name = "Jenkins-Server"
+  }
+}
+
+resource "aws_instance" "tomcat_server" {
+  ami           = "ami-067bcf851477ebb78"
+  instance_type = var.instance_type
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [aws_security_group.devops_sg.id]
+
+  tags = {
+    Name = "Tomcat-Server"
+  }
+}
+
+
+11.vi outputs.tf
+
+output "jenkins_public_ip" {
+  value = aws_instance.jenkins_server.public_ip
+}
+
+output "tomcat_public_ip" {
+  value = aws_instance.tomcat_server.public_ip
+}
+
+12.terraform init
+
+13.terraform validate
+
+14.terraform plan
+
+15.terraform apply --auto-approve
+
+//PHASE-1 COMPLEATED
+
+/No go to command prompt
+
+1.dir C:\Users\%USERNAME%\Downloads\*.pem
+2.cd Download
+
+3.scp -i Ansii.pem Ansii.pem ubuntu@<ANSIBLE_SERVER_PUBLIC_IP>:/home/ubuntu/
+
+//It will ask you want to continue connecting type(Yes/No)--yes
+
+/Now get back to the ansible server/master and connect to the server
+
+1.ls -l /home/ubuntu/Ansii.pem
+2.chmod 400 /home/ubuntu/Ansii.pem
+3.ls -l /home/ubuntu/Ansii.pem
+/Expected output
+-r-------- 1 ubuntu ubuntu 1678 Jun 16 16:17 /home/ubuntu/tip.pem
+
+4.ssh -i /home/ubuntu/Ansii.pem ubuntu@<private_ip_node>
+
+5.exit
+
+6.sudo apt update
+7.sudo apt install ansible -y
+8.ansible --version
+
+///Create a directory
+
+9.mkdir folder
+10.cd folder
+
+11.nano inventory
+
+//inside file write this
+[node1]
+172.31.20.52 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/Ansii.pem
+
+12.ansible -i inventory all -m ping
+
+//it is a default inventory file
+
+13.sudo nano /etc/ansible/hosts
+[node1]
+172.31.20.52 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/Ansii.pem
+
+//If incase this is not work close the termina and try to reconnect
+
+Then run these commands
+
+  1.sudo mkdir -p /etc/ansible
+  2.sudo nano /etc/ansible/hosts
+  inside that
+[node1]
+172.31.20.52 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/Ansii.pem
+
+14.ansible all -m ping
+
+//Create a playbook.yml file
+
+15.vi first-playbook.yml
+
+---
+- name: First Ansible Playbook
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create a test file
+      copy:
+        content: "Hello from Ansible!"
+        dest: /home/ubuntu/ansible_test.txt
+
+
+//After that run these commands
+
+16.ansible-playbook first-playbook.yml
+17.ansible-playbook -i inventory first-playbook.yml
+
+
+##PHASE-2 COMPLEATED
+
+
+Then go to Jenkins 
+
+1.sudo su
+2.apt update
+3.apt install docker.io -y
+4.docker run -dt -p 8080:8080 jenkins/Jenkins
+5.docker ps
+6.docker exec -it <container_id> /bin/bash
+
+//Now you can host the Jenkins server with thr port no 8080
+//Use puplic ip:8080
+
+//To get password
+
+7.cat /var/jenkins_home/secrets/initialAdminPassword
+
+//Now you can exit from the container
+8.exit
+9.docker exec -u 0 -it container_id bash
+Now yor are in inside the container #
+10apt update
+11.apt install maven -y
+
+/to check maven version
+
+12.mvn -v
+/Now exit from the container
+.exit
+
+
+now go  to Jenkins build the script
+
+pipeline{
+    agent any
+    stages{
+        stage("first stage: here we checkout the code from github"){
+            steps{
+                git 'https://github.com/akshu20791/addressbook-cicd-project'
+                echo "cloning the code in jenkins workspace"
+            }
+        }
+        stage("compile the code by akshat"){
+            steps{
+                sh 'mvn compile'
+                echo "compiling the project"
+            }
+        }
+        stage("runnng the test case"){
+            steps{
+                sh 'mvn test'
+            }
+        }
+        stage("packaging the project by akshat"){
+            steps{
+                sh 'mvn package'
+            }
+        }
+        // stage("depoy the project"){
+        //     steps{
+        //         sh 'sudo cp /var/lib/jenkins/workspace/project-pipeline/target/addressbook.war /home/ubuntu/apache-tomcat-9.0.108/webapps'
+        //     }
+        // }
+    
+    }
+}
+
+
+//The build it
+
+in consoloutput you can see var file copy and past it on notepad
+
+
+//go back to the instance 
+
+Install Tomcat and unzip the tomcat
+
+1.apt update
+apt install unzip -y 
+//https://tomcat.apache.org/download-90.cgi
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.118/bin/apache-tomcat-9.0.118.zip 
+unzip apache-tomcat-9.0.118.zip
+
+2.ls
+3.cd apache-tomcat-9.0.118
+4.ls
+5.cd conf
+6.vi server.xml
+  insert and change the port number 8080 to 9090
+7.cd ..
+8.cd bin
+9chmod +x *.sh
+10./startup.sh
+11.cd webapps
+12.pwd
+/copy the path and past it on note pad
+
+if you not get tomcat install java
+
+13.apt update
+14.apt install openjdk-17-jdk -y
+15.java --version
+
+//now go to bin 
+
+Run tis command again
+16../startup.sh
+now you can see tomcat started
+
+Now go to browser give public ip:9090
+
+finally
+
+1.docker cp container_id:/var/jenkins_home/workspace/pro/target/addressbook.war .
+2.cp addressbook.war /home/ubuntu/apache-tomcat-9.0.118/bin
+3.cd /home/ubuntu/apache-tomcat-9.0.118/bin
+4../startup.sh
+
+Host the webapps
+cpy the public ip:9090/addressbook
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
