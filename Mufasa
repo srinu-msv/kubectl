@@ -53,3 +53,34 @@ def ask_claude(user_question):
 
 print(ask_claude("Should I carry an umbrella in Jaipur today?"))
 print(ask_claude("What is the capital of Rajasthan?"))
+
+
+
+####With an api key
+
+import anthropic
+
+client = anthropic.Anthropic(
+    api_key="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"
+)
+
+def get_weather(city):
+    return f"It is 30°C and sunny in {city}."
+
+def ask_claude(question):
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20241022",
+        max_tokens=200,
+        messages=[
+            {
+                "role": "user",
+                "content": question
+            }
+        ]
+    )
+
+    for block in response.content:
+        if block.type == "text":
+            print(block.text)
+
+ask_claude("What is Weather in Banglore?")
