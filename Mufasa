@@ -1,0 +1,55 @@
+##Case study1-claude.ai Blog Workflow
+
+Step1: Login to claude.ai
+Step2: Create Project
+
+Step3: Add Custom instructions
+Write in a warm, simple, and friendly tone.
+Focus on quick Indian home recipes for working professionals.
+Keep instructions clear and easy
+
+
+Step4:Start New Chat
+Write a 200-300 word blog post for a quick Indian recipe (Tomato Rice).
+
+Tone should be simple and friendly.
+
+Step5: Create Artifact(Markdown)
+
+Convert this blog post into a clean Markdown format.
+
+Step6: Revise Content
+Make the blog shorter and more causal.
+
+
+
+##Case study 2
+
+
+def get_weather(city):
+    return f"Weather information for {city}"
+
+def ask_claude(user_question):
+    user_question_lower = user_question.lower()
+
+    if "weather" in user_question_lower or "umbrella" in user_question_lower:
+        words = user_question.replace("?", "").split()
+
+        city = None
+
+        for i, word in enumerate(words):
+            if word.lower() in ["in", "at"] and i + 1 < len(words):
+                city = words[i + 1]
+                break
+
+        if not city:
+            city = "your city"
+
+        weather = get_weather(city)
+        return f"{weather}. You can plan accordingly!"
+
+    else:
+        return "This question is not related to weather."
+
+print(ask_claude("Should I carry an umbrella in Jaipur today?"))
+print(ask_claude("What is the capital of Rajasthan?"))
